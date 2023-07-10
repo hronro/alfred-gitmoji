@@ -1,0 +1,33 @@
+name: Build Releases
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.34.x
+
+      - name: Build workflow
+        run: deno task build
+
+      - name: Pack workflow
+        run: |
+          cd dist
+          zip -r -9 gitmoji.alfredworkflow *
+
+      - name: Upload GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./dist/gitmoji.alfredworkflow
