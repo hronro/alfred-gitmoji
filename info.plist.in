@@ -123,6 +123,6 @@
 	<key>userconfigurationconfig</key>
 	<array/>
 	<key>webaddress</key>
-	<string></string>
+	<string>https://github.com/hronro/alfred-gitmoji</string>
 </dict>
 </plist>
