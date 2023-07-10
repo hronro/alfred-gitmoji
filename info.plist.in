@@ -87,7 +87,7 @@
 				<key>subtext</key>
 				<string></string>
 				<key>title</key>
-				<string></string>
+				<string>Gitmoji</string>
 				<key>type</key>
 				<integer>7</integer>
 				<key>withspace</key>
@@ -122,6 +122,8 @@
 	</dict>
 	<key>userconfigurationconfig</key>
 	<array/>
+	<key>version</key>
+	<string>0.1.0</string>
 	<key>webaddress</key>
 	<string>https://github.com/hronro/alfred-gitmoji</string>
 </dict>

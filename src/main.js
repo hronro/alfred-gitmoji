@@ -14,7 +14,7 @@ export function run() {
 			title: item.description,
 			subtitle: item.code,
 			icon: {
-				path: `./icons/${item.name}.svg`
+				path: `./icons/${item.name}.svg`,
 			},
 			arg: item.code,
 			mods: {
@@ -22,7 +22,7 @@ export function run() {
 					valid: true,
 					subtitle: 'Copy emoji to clipboard',
 					arg: item.emoji,
-				}
+				},
 			},
 		})),
 	}

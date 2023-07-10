@@ -1,11 +1,11 @@
-import { exists } from "https://deno.land/std@0.193.0/fs/exists.ts"
+import { exists } from 'https://deno.land/std@0.193.0/fs/exists.ts'
 
-import { rollup, type RollupBuild } from "npm:rollup"
-import { minify } from "npm:uglify-js"
+import { rollup, type RollupBuild } from 'npm:rollup'
+import { minify } from 'npm:uglify-js'
 
-const MAGIC_GITMOJI_DATA_MODULE_NAME = "__gitmoji-data__"
+const MAGIC_GITMOJI_DATA_MODULE_NAME = '__gitmoji-data__'
 
-type Semver = "major" | "minor" | "patch"
+type Semver = 'major' | 'minor' | 'patch'
 interface Gitmoji {
 	emoji: string
 	entity: string
@@ -19,19 +19,19 @@ interface GitmojiData {
 }
 
 const gitmojiData: GitmojiData =
-	await (await fetch("https://gitmoji.dev/api/gitmojis"))
+	await (await fetch('https://gitmoji.dev/api/gitmojis'))
 		.json()
 
 let bundle: RollupBuild
 
 try {
 	bundle = await rollup({
-		input: "src/main.js",
-		treeshake: { preset: "smallest" },
+		input: 'src/main.js',
+		treeshake: { preset: 'smallest' },
 		strictDeprecations: true,
 		plugins: [
 			{
-				name: "gitmojiData",
+				name: 'gitmojiData',
 				resolveId(source) {
 					if (source === MAGIC_GITMOJI_DATA_MODULE_NAME) {
 						return source
@@ -54,42 +54,50 @@ try {
 
 const { output: outputs } = await bundle.generate({
 	generatedCode: {
-		preset: "es2015",
+		preset: 'es2015',
 	},
 })
 
 // Setup the output directory
-if (await exists("./dist")) {
-	await Deno.remove("./dist", { recursive: true })
+if (await exists('./dist')) {
+	await Deno.remove('./dist', { recursive: true })
 }
-Deno.mkdir("./dist")
+Deno.mkdir('./dist')
 
 if (outputs.length === 0) {
-	throw new Error("No outputs from rollup")
+	throw new Error('No outputs from rollup')
 }
 
 const output = outputs[0]!
 
-if (output.type !== "chunk") {
-	throw new Error("Unexpected Rollup output type")
+if (output.type !== 'chunk') {
+	throw new Error('Unexpected Rollup output type')
 }
+
 const script = minify(output.code, {
 	compress: {
 		toplevel: true,
 	},
 	mangle: {
 		toplevel: true,
-		reserved: ["run"],
+		reserved: ['run'],
 	},
-}).code.replace("export{run}", "")
-const alfredPlistTemplate = await Deno.readTextFile("./info.plist.in")
+})
+	.code
+	// XML escape
+	.replaceAll('&', '&amp;')
+	.replaceAll('<', '&lt;')
+	// Remove the export statement
+	.replace('export{run}', '')
+
+const alfredPlistTemplate = await Deno.readTextFile('./info.plist.in')
 await Deno.writeTextFile(
 	`./dist/info.plist`,
-	alfredPlistTemplate.replace("{{script}}", script),
+	alfredPlistTemplate.replace('{{script}}', script),
 )
 
 // Download icons from Twemoji
-await Deno.mkdir("./dist/icons")
+await Deno.mkdir('./dist/icons')
 await Promise.all(gitmojiData.gitmojis.map(async (item) => {
 	const unicode = item.emoji.codePointAt(0)!.toString(16)
 	const response = await fetch(
